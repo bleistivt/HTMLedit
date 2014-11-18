@@ -66,7 +66,7 @@ class HTMLeditPlugin extends Gdn_Plugin {
                 || strpos($Master, '{asset name="Content"') === false
                 || strpos($Master, '{asset name="Foot"') === false
             ) {
-                $Sender->Form->AddError('Warning: You master view should at least contain the Head, Content and Foot assets to work.');
+                $Sender->Form->AddError('Warning: Your master view should at least contain the Head, Content and Foot assets to work.');
             }
         }
         $Sender->AddSideMenu('settings/htmledit');
