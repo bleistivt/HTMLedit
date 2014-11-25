@@ -62,9 +62,9 @@ class HTMLeditPlugin extends Gdn_Plugin {
             $this->WriteMaster($Master, $Mobile);
             SaveToConfig($ConfEnabledString, val('Enabled', $FormValues));
             $Sender->InformMessage(T('Your changes have been saved.'));
-            if (strpos($Master, '{asset name="Head"') === false
-                || strpos($Master, '{asset name="Content"') === false
-                || strpos($Master, '{asset name="Foot"') === false
+            if ((strpos($Master, '{asset name="Head"') === false && strpos($Master, '{asset name=\'Head\'') === false)
+                || (strpos($Master, '{asset name="Content"') === false && strpos($Master, '{asset name=\'Content\'') === false)
+                || (strpos($Master, '{asset name="Foot"') === false && strpos($Master, '{asset name=\'Foot\'') === false)
             ) {
                 $Sender->Form->AddError('Warning: Your master view should at least contain the Head, Content and Foot assets to work.');
             }
