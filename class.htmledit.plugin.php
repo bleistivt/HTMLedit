@@ -99,15 +99,15 @@ class HTMLeditPlugin extends Gdn_Plugin {
         }
         file_put_contents($Path.($Mobile ? 'mobile' : 'desktop').'.master.tpl', $Content);
     }
-	
-	// Disable the modified master view when the theme is switched
-	public function SettingsController_AfterEnableTheme_Handler($Sender) {
-		if ($Sender->EventArguments['ThemeName'] == C('Garden.Theme')) { 
-			SaveToConfig('HTMLedit.Desktop.Enabled', false);
-		} elseif ($Sender->EventArguments['ThemeName'] == C('Garden.MobileTheme')) {
-			SaveToConfig('HTMLedit.Mobile.Enabled', false);
-		}
-	}
+    
+    // Disable the modified master view when the theme is switched
+    public function SettingsController_AfterEnableTheme_Handler($Sender) {
+        if ($Sender->EventArguments['ThemeName'] == C('Garden.Theme')) { 
+            SaveToConfig('HTMLedit.Desktop.Enabled', false);
+        } elseif ($Sender->EventArguments['ThemeName'] == C('Garden.MobileTheme')) {
+            SaveToConfig('HTMLedit.Mobile.Enabled', false);
+        }
+    }
 
 }
 
