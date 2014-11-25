@@ -3,7 +3,7 @@
 $PluginInfo['HTMLedit'] = array(
     'Name' => 'HTMLedit',
     'Description' => 'Adds the ability to edit the default.master.tpl of your template through the dashboard.',
-    'Version' => '0.2',
+    'Version' => '0.3',
     'RequiredApplications' => array('Vanilla' => '2.1'),
     'Author' => 'Bleistivt',
     'AuthorUrl' => 'http://bleistivt.net',
