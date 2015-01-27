@@ -7,6 +7,7 @@ $PluginInfo['HTMLedit'] = array(
     'RequiredApplications' => array('Vanilla' => '2.1'),
     'Author' => 'Bleistivt',
     'AuthorUrl' => 'http://bleistivt.net',
+    'License' => 'GNU GPL2',
     'SettingsUrl' => '/dashboard/settings/htmledit',
     'MobileFriendly' => true
 );
