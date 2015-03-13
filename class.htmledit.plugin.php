@@ -3,8 +3,8 @@
 $PluginInfo['HTMLedit'] = array(
     'Name' => 'HTMLedit',
     'Description' => 'Adds the ability to edit the default.master.tpl of your template through the dashboard.',
-    'Version' => '0.3',
-    'RequiredApplications' => array('Vanilla' => '2.1'),
+    'Version' => '0.4',
+    'RequiredApplications' => array('Vanilla' => '2.2'),
     'Author' => 'Bleistivt',
     'AuthorUrl' => 'http://bleistivt.net',
     'License' => 'GNU GPL2',
@@ -28,7 +28,7 @@ class HTMLeditPlugin extends Gdn_Plugin {
         if (strpos($MasterViewPath, 'default.master') === false) {
             return;
         }
-        $Media = IsMobile() && C('Garden.MobileTheme') ? 'mobile' : 'desktop';
+        $Media = IsMobile() ? 'mobile' : 'desktop';
         $MasterView = PATH_UPLOADS.'/htmledit/'.$Media.'.master.tpl';
         if (C('HTMLedit.'.ucfirst($Media).'.Enabled', true) && file_exists($MasterView)) {
             $MasterViewPath = $MasterView;
@@ -63,10 +63,7 @@ class HTMLeditPlugin extends Gdn_Plugin {
             $this->WriteMaster($Master, $Mobile);
             SaveToConfig($ConfEnabledString, val('Enabled', $FormValues));
             $Sender->InformMessage(T('Your changes have been saved.'));
-            if ((strpos($Master, '{asset name="Head"') === false && strpos($Master, '{asset name=\'Head\'') === false)
-                || (strpos($Master, '{asset name="Content"') === false && strpos($Master, '{asset name=\'Content\'') === false)
-                || (strpos($Master, '{asset name="Foot"') === false && strpos($Master, '{asset name=\'Foot\'') === false)
-            ) {
+            if (preg_match_all('/{asset name=((?:\'|")(?:Head|Content|Foot)(?:\'|"))/', $Master) < 3) {
                 $Sender->Form->AddError('Warning: Your master view should at least contain the Head, Content and Foot assets to work.');
             }
         }
@@ -110,61 +107,4 @@ class HTMLeditPlugin extends Gdn_Plugin {
         }
     }
 
-}
-
-if (!function_exists('requestContext')) {
-   /**
-    * Get request context
-    *
-    * This method determines if current request is operating within HTTP, or
-    * elsewhere such as the command line.
-    *
-    * @staticvar string $context
-    * @return string
-    */
-   function requestContext() {
-      static $context;
-      if (is_null($context)) {
-         $context = C('Garden.RequestContext', null);
-         if (is_null($context)) {
-            $protocol = val('SERVER_PROTOCOL', $_SERVER);
-            if (preg_match('`^HTTP/`', $protocol)) {
-               $context = 'http';
-            } else {
-               $context = $protocol;
-            }
-         }
-         if (is_null($context)) {
-            $context = 'unknown';
-         }
-      }
-      return $context;
-   }
-}
-
-if (!function_exists('safeHeader')) {
-   /**
-    * Context-aware call to header()
-    *
-    * This method is context-aware and will avoid sending headers if the request
-    * context is not HTTP.
-    *
-    * @staticvar string $context
-    * @param type $header
-    * @param type $replace
-    * @param type $http_response_code
-    */
-   function safeHeader($header, $replace = true, $http_response_code = null) {
-      static $context;
-      if (headers_sent()) {
-         return false;
-      }
-      if (is_null($context)) {
-         $context = requestContext();
-      }
-
-      if ($context == 'http') {
-         header($header, $replace, $http_response_code);
-      }
-   }
 }
