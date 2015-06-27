@@ -74,6 +74,15 @@ class HTMLeditPlugin extends Gdn_Plugin {
         $sender->render('blank', 'utility', 'dashboard');
     }
 
+    // Disables the modified master view when the theme is switched
+    public function settingsController_afterEnableTheme_handler($sender, $args) {
+        if ($args['ThemeName'] == c('Garden.Theme')) {
+            $this->enabled(false, false);
+        } elseif ($args['ThemeName'] == c('Garden.MobileTheme')) {
+            $this->enabled(true, false);
+        }
+    }
+
     // Writes to the master view or returns its path
     private function master($mobile = false, $content = false) {
         $path = PATH_UPLOADS.'/htmledit/';
@@ -94,15 +103,6 @@ class HTMLeditPlugin extends Gdn_Plugin {
             saveToConfig($key, $set);
         }
         return c($key, true);
-    }
-
-    // Disables the modified master view when the theme is switched
-    public function settingsController_afterEnableTheme_handler($sender, $args) {
-        if ($args['ThemeName'] == c('Garden.Theme')) {
-            $this->enabled(false, false);
-        } elseif ($args['ThemeName'] == c('Garden.MobileTheme')) {
-            $this->enabled(true, false);
-        }
     }
 
 }
