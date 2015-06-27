@@ -1,4 +1,4 @@
-<?php if (!defined('APPLICATION')) exit();
+<?php
 
 $PluginInfo['HTMLedit'] = array(
     'Name' => 'HTMLedit',
@@ -8,102 +8,100 @@ $PluginInfo['HTMLedit'] = array(
     'Author' => 'Bleistivt',
     'AuthorUrl' => 'http://bleistivt.net',
     'License' => 'GNU GPL2',
-    'SettingsUrl' => '/dashboard/settings/htmledit',
+    'SettingsUrl' => 'settings/htmledit',
     'MobileFriendly' => true
 );
 
 class HTMLeditPlugin extends Gdn_Plugin {
 
-    private $getMaster = false;
-
     // Override the master view
-    public function Base_BeforeFetchMaster_Handler($Sender) {
-        $MasterViewPath = &$Sender->EventArguments['MasterViewPath'];
-        // If /vanilla/getmaster was called, echo out the master view
+    public function base_beforeFetchMaster_handler($sender, &$args) {
+        // If /vanilla/getmaster was called, echo out the master view.
         if ($this->getMaster) {
             safeHeader('Content-Type: text/plain', true);
-            readfile($MasterViewPath);
+            readfile($args['MasterViewPath']);
             exit();
         }
-        if (strpos($MasterViewPath, 'default.master') === false) {
-            return;
-        }
-        $Media = IsMobile() ? 'mobile' : 'desktop';
-        $MasterView = PATH_UPLOADS.'/htmledit/'.$Media.'.master.tpl';
-        if (C('HTMLedit.'.ucfirst($Media).'.Enabled', true) && file_exists($MasterView)) {
-            $MasterViewPath = $MasterView;
+        if (strpos($args['MasterViewPath'], 'default.master') !== false && $this->enabled(isMobile())) {
+            $args['MasterViewPath'] = $this->master(isMobile()) ?: $args['MasterViewPath'];
         }
     }
 
     // Adds the editor link to the dashboard
-    public function Base_GetAppSettingsMenuItems_Handler($Sender) {
-        $Menu = $Sender->EventArguments['SideMenu'];
-        $Menu->AddLink('Appearance', T('HTML Editor'), 'settings/htmledit', 'Garden.Settings.Manage');
+    public function base_getAppSettingsMenuItems_handler($sender, &$args) {
+        $args['SideMenu']->addLink('Appearance', t('HTML Editor'), 'settings/htmledit', 'Garden.Settings.Manage');
     }
 
     // The editor page
-    public function SettingsController_HTMLedit_Create($Sender){
-        $Sender->Permission('Garden.Settings.Manage');
-        $Mobile = (val(0, $Sender->RequestArgs) == 'mobile');
-        $Media = $Mobile ? 'mobile' : 'desktop';
-        $ConfEnabledString = 'HTMLedit.'.ucfirst($Media).'.Enabled';
-        $File = PATH_UPLOADS.'/htmledit/'.$Media.'.master.tpl';
-        $Session = Gdn::Session();
+    public function settingsController_htmlEdit_create($sender, $mobile = ''){
+        $sender->permission('Garden.Settings.Manage');
+        $mobile = $mobile == 'mobile';
 
-        if ($Sender->Form->AuthenticatedPostBack() === FALSE) {
-            $Sender->Form->SetValue('Enabled', C($ConfEnabledString, true));
-            if (file_exists($File)) {
-                $Sender->Form->SetValue('Master', file_get_contents($File));
+        if ($sender->Form->authenticatedPostBack() === false) {
+            $sender->Form->setValue('Enabled', $this->enabled($mobile));
+            if ($this->master($mobile)) {
+                $sender->Form->setValue('Master', file_get_contents($this->master($mobile)));
             } else {
-                $Sender->AddDefinition('HTMLedit.initEditor', true);
+                $sender->addDefinition('HTMLedit.initEditor', true);
             }
         } else {
-            $FormValues = $Sender->Form->FormValues();
-            $Master = val('Master', $FormValues, '');
-            $this->WriteMaster($Master, $Mobile);
-            SaveToConfig($ConfEnabledString, val('Enabled', $FormValues));
-            $Sender->InformMessage(T('Your changes have been saved.'));
-            if (preg_match_all('/{asset name=((?:\'|")(?:Head|Content|Foot)(?:\'|"))/', $Master) < 3) {
-                $Sender->Form->AddError('Warning: Your master view should at least contain the Head, Content and Foot assets to work.');
+            $master = $sender->Form->getValue('Master', '');
+            $this->master($mobile, $master);
+            $this->enabled($mobile, $sender->Form->getValue('Enabled'));
+            if (preg_match_all('/{asset name=((?:\'|")(?:Head|Content|Foot)(?:\'|"))/', $master) < 3) {
+                $sender->Form->addError('Warning: Your master view should at least contain the Head, Content and Foot assets to work.');
             }
+            $sender->informMessage(t('Your changes have been saved.'));
         }
-        $Sender->AddSideMenu('settings/htmledit');
-        $Sender->Title(T('HTML Editor'));
+        $sender->addJsFile('ace.js', 'plugins/HTMLedit');
+        $sender->addJsFile('htmledit.js', 'plugins/HTMLedit');
+        $sender->addDefinition('HTMLedit.loadMessage', t("Load default master view into the editor?\nUnsaved changes will be lost."));
+        $sender->addDefinition('HTMLedit.leaveMessage', t('Do you really want to leave? Your changes will be lost.'));
 
-        $Sender->AddJsFile('ace.js', 'plugins/HTMLedit');
-        $Sender->AddJsFile('htmledit.js', 'plugins/HTMLedit');
-        $Sender->AddDefinition('HTMLedit.loadMessage', T("Load default master view into the editor?\nUnsaved changes will be lost."));
-        $Sender->AddDefinition('HTMLedit.leaveMessage', T('Do you really want to leave? Your changes will be lost.'));
-
-        $Sender->Render($this->GetView('editor.php'));
+        $sender->title(t('HTML Editor'));
+        $sender->addSideMenu('settings/htmledit');
+        $sender->render('editor', '', 'plugins/HTMLedit');
     }
 
     // Spits out the master view to be loaded into the editor
-    public function VanillaController_GetMaster_Create($Sender) {
-        $Mobile = (val(0, $Sender->RequestArgs) == 'mobile');
-        $Sender->Permission('Garden.Settings.Manage');
+    public function vanillaController_getMaster_create($sender, $mobile = '') {
+        $sender->permission('Garden.Settings.Manage');
         $this->getMaster = true;
-        // Set the mobile state and theme
-        IsMobile($Mobile);
-        $Sender->Theme = Gdn::ThemeManager()->CurrentTheme();
-        // Trick the controller into fetching the master view
-        $Sender->Render('Blank', 'Utility', 'Dashboard');
+        // Set the mobile state and theme.
+        isMobile($mobile == 'mobile');
+        $sender->Theme = Gdn::themeManager()->currentTheme();
+        // Trick the controller into fetching the master view.
+        $sender->render('blank', 'utility', 'dashboard');
     }
 
-    private function WriteMaster($Content, $Mobile = false) {
-        $Path = PATH_UPLOADS.'/htmledit/';
-        if (!file_exists($Path)) {
-            mkdir($Path);
+    // Writes to the master view or returns its path
+    private function master($mobile = false, $content = false) {
+        $path = PATH_UPLOADS.'/htmledit/';
+        $file = $path.($mobile ? 'mobile' : 'desktop').'.master.tpl';
+        if ($content === false) {
+            return file_exists($file) ? $file : false;
         }
-        file_put_contents($Path.($Mobile ? 'mobile' : 'desktop').'.master.tpl', $Content);
+        if (!file_exists($path)) {
+            mkdir($path);
+        }
+        file_put_contents($file, $content);
     }
-    
-    // Disable the modified master view when the theme is switched
-    public function SettingsController_AfterEnableTheme_Handler($Sender) {
-        if ($Sender->EventArguments['ThemeName'] == C('Garden.Theme')) { 
-            SaveToConfig('HTMLedit.Desktop.Enabled', false);
-        } elseif ($Sender->EventArguments['ThemeName'] == C('Garden.MobileTheme')) {
-            SaveToConfig('HTMLedit.Mobile.Enabled', false);
+
+    // Get/set the plugins configuration for mobile/desktop
+    private function enabled($mobile, $set = null) {
+        $key = 'HTMLedit.'.($mobile ? 'Mobile' : 'Desktop').'.Enabled';
+        if (!is_null($set)) {
+            saveToConfig($key, $set);
+        }
+        return c($key, true);
+    }
+
+    // Disables the modified master view when the theme is switched
+    public function settingsController_afterEnableTheme_handler($sender, $args) {
+        if ($args['ThemeName'] == c('Garden.Theme')) {
+            $this->enabled(false, false);
+        } elseif ($args['ThemeName'] == c('Garden.MobileTheme')) {
+            $this->enabled(true, false);
         }
     }
 
