@@ -17,7 +17,7 @@ class HTMLeditPlugin extends Gdn_Plugin {
     // Override the master view
     public function base_beforeFetchMaster_handler($sender, &$args) {
         // If /vanilla/getmaster was called, echo out the master view.
-        if ($this->getMaster) {
+        if (isset($this->getMaster)) {
             safeHeader('Content-Type: text/plain', true);
             readfile($args['MasterViewPath']);
             exit();
