@@ -19,10 +19,10 @@ $mobile = (val(0, $this->RequestArgs) == 'mobile'); ?>
         <div id="AceEditor" style="height:550px;border:solid #82bddd;border-width: 1px 0;display:none;"></div>
     </li>
 </ul>
-<?php echo $this->Form->open(array('id' => 'Form_HTMLedit')); ?>
+<?php echo $this->Form->open(['id' => 'Form_HTMLedit']); ?>
 <ul>
     <li id="NoJsForm">
-        <?php echo $this->Form->textBox('Master', array('MultiLine' => true, 'class' => 'InputBox WideInput')); ?>
+        <?php echo $this->Form->textBox('Master', ['MultiLine' => true, 'class' => 'InputBox WideInput']); ?>
     </li>
     <li>
         <?php echo anchor(
@@ -39,5 +39,6 @@ $mobile = (val(0, $this->RequestArgs) == 'mobile'); ?>
     </li>
 </ul>
 <?php
-    echo $this->Form->button('Save', array('class' => 'Button HTMLeditSave'));
-    echo $this->Form->close();
+
+echo $this->Form->button('Save', ['class' => 'Button HTMLeditSave']);
+echo $this->Form->close();
