@@ -22,7 +22,10 @@ $mobile = (val(0, $this->RequestArgs) == 'mobile'); ?>
 <?php echo $this->Form->open(['id' => 'Form_HTMLedit']); ?>
 <ul>
     <li id="NoJsForm">
-        <?php echo $this->Form->textBox('Master', ['MultiLine' => true, 'class' => 'InputBox WideInput']); ?>
+        <?php echo $this->Form->textBox('Master', [
+            'MultiLine' => true,
+            'class' => 'InputBox WideInput'
+        ]); ?>
     </li>
     <li>
         <?php echo anchor(
@@ -35,7 +38,9 @@ $mobile = (val(0, $this->RequestArgs) == 'mobile'); ?>
         <?php echo $this->Form->checkBox('Enabled', 'Enable'); ?>
     </li>
     <li>
-        <div class="Message AlertMessage"><?php echo t('Note: Themes with a default.master.php are not supported.'); ?></div>
+        <div class="Message AlertMessage">
+            <?php echo t('Note: Themes with a default.master.php are not supported.'); ?>
+        </div>
     </li>
 </ul>
 <?php
