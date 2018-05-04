@@ -3,7 +3,9 @@
     "description": "Adds the ability to edit the default.master.tpl of your template through the dashboard.",
     "version": "1.0",
     "license": "GNU GPL2",
+    "gitHub": "bleistivt/HTMLedit",
     "settingsUrl": "settings/htmledit",
+    "usePopupSettings": false,
     "mobileFriendly": true,
     "key": "htmledit",
     "type": "addon",
@@ -12,8 +14,5 @@
             "name": "Bleistivt",
             "homepage": "http://bleistivt.net"
         }
-    ],
-    "require": {
-        "vanilla": ">=2.2"
-    }
+    ]
 }
