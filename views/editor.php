@@ -1,49 +1,65 @@
 <?php if (!defined('APPLICATION')) exit();
 
-$mobile = (val(0, $this->RequestArgs) == 'mobile'); ?>
+$mobile = (val(0, $this->RequestArgs) == 'mobile');
 
-<h1><?php echo t('HTML Editor'); ?></h1>
-<?php echo $this->Form->errors(); ?>
-<div class="Tabs">
-    <ul>
-        <li<?php if (!$mobile) echo ' class="Active"'; ?>>
-            <?php echo anchor(t('Desktop Theme'), '/dashboard/settings/htmledit'); ?>
-        </li>
-        <li<?php if ($mobile) echo ' class="Active"'; ?>>
-            <?php echo anchor(t('Mobile Theme'), '/dashboard/settings/htmledit/mobile'); ?>
-        </li>
-    </ul>
+echo heading($this->title());
+
+?>
+
+<div class="padded">
+    <p>
+        <?php echo t('Note: Themes with a default.master.php are not supported.'); ?>
+    </p>
 </div>
+
+<div class="toolbar">
+    <div class="btn-group filters">
+        <?php
+        echo anchor(
+            t('Desktop Theme'),
+            '/dashboard/settings/htmledit',
+            'btn btn-secondary'.(!$mobile ? ' active' : '')
+        );
+        echo anchor(
+            t('Mobile Theme'),
+            '/dashboard/settings/htmledit/mobile',
+            'btn btn-secondary'.($mobile ? ' active' : '')
+        );
+        ?>
+        </li>
+    </div>
+</div>
+
+<div id="AceEditor" style="height:550px;display:none;margin:0 -1.125rem;border-bottom:0.0625rem solid #e7e8e9;"></div>
+
+<?php
+
+echo $this->Form->open(['id' => 'Form_HTMLedit']);
+echo $this->Form->errors();
+
+?>
 <ul>
-    <li>
-        <div id="AceEditor" style="height:550px;border:solid #82bddd;border-width: 1px 0;display:none;"></div>
-    </li>
-</ul>
-<?php echo $this->Form->open(['id' => 'Form_HTMLedit']); ?>
-<ul>
-    <li id="NoJsForm">
+    <li class="form-group" id="NoJsForm">
         <?php echo $this->Form->textBox('Master', [
             'MultiLine' => true,
             'class' => 'InputBox WideInput'
         ]); ?>
     </li>
-    <li>
+    <li class="form-group">
         <?php echo anchor(
             t('Load this themes default.master.tpl into the editor'),
             'vanilla/getmaster'.($mobile ? '/mobile' : ''),
-            'LoadMaster'
+            'LoadMaster btn'
         ); ?>
     </li>
-    <li>
-        <?php echo $this->Form->checkBox('Enabled', 'Enable'); ?>
-    </li>
-    <li>
-        <div class="Message AlertMessage">
-            <?php echo t('Note: Themes with a default.master.php are not supported.'); ?>
-        </div>
+    <li class="form-group">
+        <?php echo $this->Form->toggle('Enabled', 'Enable'); ?>
     </li>
 </ul>
-<?php
 
-echo $this->Form->button('Save', ['class' => 'Button HTMLeditSave']);
+<div class="form-footer">
+<?php echo $this->Form->button('Save', ['class' => 'Button HTMLeditSave']); ?>
+</div>
+
+<?php
 echo $this->Form->close();
