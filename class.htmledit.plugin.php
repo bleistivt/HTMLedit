@@ -1,21 +1,10 @@
 <?php
 
-$PluginInfo['HTMLedit'] = [
-    'Name' => 'HTMLedit',
-    'Description' => 'Adds the ability to edit the default.master.tpl of your template through the dashboard.',
-    'Version' => '1.0',
-    'RequiredApplications' => ['Vanilla' => '2.2'],
-    'Author' => 'Bleistivt',
-    'AuthorUrl' => 'http://bleistivt.net',
-    'License' => 'GNU GPL2',
-    'SettingsUrl' => 'settings/htmledit',
-    'MobileFriendly' => true
-];
-
 class HTMLeditPlugin extends Gdn_Plugin {
 
     // Override the master view
-    public function base_beforeFetchMaster_handler($sender, &$args) {
+    public function base_beforeFetchMaster_handler($sender) {
+        $args = &$sender->EventArguments;
         // If /vanilla/getmaster was called, echo out the master view.
         if (isset($this->getMaster)) {
             safeHeader('Content-Type: text/plain', true);
@@ -32,7 +21,7 @@ class HTMLeditPlugin extends Gdn_Plugin {
 
 
     // Adds the editor link to the dashboard
-    public function base_getAppSettingsMenuItems_handler($sender, &$args) {
+    public function base_getAppSettingsMenuItems_handler($sender, $args) {
         $args['SideMenu']->addLink(
             'Appearance',
             t('HTML Editor'),
@@ -45,13 +34,13 @@ class HTMLeditPlugin extends Gdn_Plugin {
     // The editor page
     public function settingsController_htmlEdit_create($sender, $mobile = ''){
         $sender->permission('Garden.Settings.Manage');
-        $sender->addSideMenu('settings/htmledit');
+        $sender->setHighlightRoute('settings/htmledit');
 
         $mobile = $mobile == 'mobile';
 
         if ($sender->Form->authenticatedPostBack() === false) {
             $sender->Form->setValue('Enabled', $this->enabled($mobile));
-    
+
             if ($this->master($mobile)) {
                 $sender->Form->setValue('Master', file_get_contents($this->master($mobile)));
             } else {
@@ -67,11 +56,13 @@ class HTMLeditPlugin extends Gdn_Plugin {
             if (preg_match_all($matchAssets, $master) < 3) {
                 $sender->Form->addError('Warning: Your master view should at least contain the Head, Content and Foot assets to work.');
             }
-    
+
             $sender->informMessage(t('Your changes have been saved.'));
         }
 
-        $sender->addJsFile('ace.js', 'plugins/HTMLedit');
+        $sender->addJsFile('//cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/ace.js');
+        $sender->addJsFile('//cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/mode-smarty.js');
+        $sender->addJsFile('//cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/theme-crimson_editor.js');
         $sender->addJsFile('htmledit.js', 'plugins/HTMLedit');
 
         $sender->addDefinition('HTMLedit.loadMessage', t("Load default master view into the editor?\nUnsaved changes will be lost."));
