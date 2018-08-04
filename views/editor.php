@@ -1,6 +1,6 @@
 <?php if (!defined('APPLICATION')) exit();
 
-$mobile = (val(0, $this->RequestArgs) == 'mobile');
+$mobile = (($this->RequestArgs[0] ?? '') == 'mobile');
 
 echo heading($this->title());
 
