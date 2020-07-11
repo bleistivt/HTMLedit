@@ -32,7 +32,7 @@ class HTMLeditPlugin extends Gdn_Plugin {
 
 
     // The editor page
-    public function settingsController_htmlEdit_create($sender, $mobile = ''){
+    public function settingsController_htmledit_create($sender, $mobile = ''){
         $sender->permission('Garden.Settings.Manage');
         $sender->setHighlightRoute('settings/htmledit');
 
