@@ -24,7 +24,7 @@ class HTMLeditPlugin extends Gdn_Plugin {
     public function base_getAppSettingsMenuItems_handler($sender, $args) {
         $args['SideMenu']->addLink(
             'Appearance',
-            t('HTML Editor'),
+            Gdn::translate('HTML Editor'),
             'settings/htmledit',
             'Garden.Settings.Manage'
         );
@@ -57,7 +57,7 @@ class HTMLeditPlugin extends Gdn_Plugin {
                 $sender->Form->addError('Warning: Your master view should at least contain the Head, Content and Foot assets to work.');
             }
 
-            $sender->informMessage(t('Your changes have been saved.'));
+            $sender->informMessage(Gdn::translate('Your changes have been saved.'));
         }
 
         $sender->addJsFile('//cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/ace.js');
@@ -65,10 +65,10 @@ class HTMLeditPlugin extends Gdn_Plugin {
         $sender->addJsFile('//cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/theme-crimson_editor.js');
         $sender->addJsFile('htmledit.js', 'plugins/HTMLedit');
 
-        $sender->addDefinition('HTMLedit.loadMessage', t("Load default master view into the editor?\nUnsaved changes will be lost."));
-        $sender->addDefinition('HTMLedit.leaveMessage', t('Do you really want to leave? Your changes will be lost.'));
+        $sender->addDefinition('HTMLedit.loadMessage', Gdn::translate("Load default master view into the editor?\nUnsaved changes will be lost."));
+        $sender->addDefinition('HTMLedit.leaveMessage', Gdn::translate('Do you really want to leave? Your changes will be lost.'));
 
-        $sender->title(t('HTML Editor'));
+        $sender->title(Gdn::translate('HTML Editor'));
         $sender->render('editor', '', 'plugins/HTMLedit');
     }
 
@@ -89,9 +89,9 @@ class HTMLeditPlugin extends Gdn_Plugin {
 
     // Disables the modified master view when the theme is switched
     public function settingsController_afterEnableTheme_handler($sender, $args) {
-        if ($args['ThemeName'] == c('Garden.Theme')) {
+        if ($args['ThemeName'] == Gdn::config('Garden.Theme')) {
             $this->enabled(false, false);
-        } elseif ($args['ThemeName'] == c('Garden.MobileTheme')) {
+        } elseif ($args['ThemeName'] == Gdn::config('Garden.MobileTheme')) {
             $this->enabled(true, false);
         }
     }
@@ -119,7 +119,7 @@ class HTMLeditPlugin extends Gdn_Plugin {
         if (!is_null($set)) {
             saveToConfig($key, $set);
         }
-        return c($key, true);
+        return Gdn::config($key, true);
     }
 
 }

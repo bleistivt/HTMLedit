@@ -8,7 +8,7 @@ echo heading($this->title());
 
 <div class="padded">
     <p>
-        <?php echo t('Note: Themes with a default.master.php are not supported.'); ?>
+        <?php echo Gdn::translate('Note: Themes with a default.master.php are not supported.'); ?>
     </p>
 </div>
 
@@ -16,12 +16,12 @@ echo heading($this->title());
     <div class="btn-group filters">
         <?php
         echo anchor(
-            t('Desktop Theme'),
+            Gdn::translate('Desktop Theme'),
             '/dashboard/settings/htmledit',
             'btn btn-secondary'.(!$mobile ? ' active' : '')
         );
         echo anchor(
-            t('Mobile Theme'),
+            Gdn::translate('Mobile Theme'),
             '/dashboard/settings/htmledit/mobile',
             'btn btn-secondary'.($mobile ? ' active' : '')
         );
@@ -47,7 +47,7 @@ echo $this->Form->errors();
     </li>
     <li class="form-group">
         <?php echo anchor(
-            t('Load this themes default.master.tpl into the editor'),
+            Gdn::translate('Load this themes default.master.tpl into the editor'),
             'vanilla/getmaster'.($mobile ? '/mobile' : ''),
             'LoadMaster btn'
         ); ?>
