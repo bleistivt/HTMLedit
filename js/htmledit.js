@@ -1,12 +1,12 @@
-jQuery(function($) {
-    var editor = ace.edit('AceEditor');
-    var leave = false;
+jQuery(($) => {
+    const editor = ace.edit('AceEditor');
+    let leave = false;
     editor.setTheme('ace/theme/crimson_editor');
     editor.getSession().setMode('ace/mode/smarty');
-    var masterInitial = $('#Form_Master').val();
+    let masterInitial = $('#Form_Master').val();
     editor.setValue(masterInitial, -1);
     if (gdn.definition('HTMLedit.initEditor', false)) {
-        $.get($('.LoadMaster').attr('href'), function(data) {
+        $.get($('.LoadMaster').attr('href'), (data) => {
             editor.setValue(data, -1);
             masterInitial = data;
         });
@@ -14,14 +14,14 @@ jQuery(function($) {
     editor.focus();
     if (localStorage.getItem('htmleditscrollpos')) {
         try {
-            var sp = JSON.parse(localStorage.getItem('htmleditscrollpos'));
+            const sp = JSON.parse(localStorage.getItem('htmleditscrollpos'));
             editor.moveCursorToPosition(sp.pos);
             editor.getSession().setScrollTop(sp.scroll);
         } catch (e) { }
     }
     $('#AceEditor').show();
     $('#NoJsForm').hide();
-    $('.HTMLeditSave').on('click', function(e) {
+    $('.HTMLeditSave').on('click', (e) => {
         e.preventDefault();
         leave = true;
         $('#Form_Master').val(editor.getValue());
@@ -33,7 +33,7 @@ jQuery(function($) {
     });
     $('.LoadMaster').click(function(e) {
         e.preventDefault();
-        $.get($(this).attr('href'), function(data) {
+        $.get($(this).attr('href'), (data) => {
             if (editor.getValue() != masterInitial) {
                 if (confirm(gdn.definition('HTMLedit.loadMessage'))) {
                     editor.setValue(data);
@@ -43,7 +43,7 @@ jQuery(function($) {
             }
         });
     });
-    $(window).on('beforeunload', function() {
+    $(window).on('beforeunload', () => {
         if (editor.getValue() != masterInitial && !leave) {
             return gdn.definition('HTMLedit.leaveMessage');
         }
